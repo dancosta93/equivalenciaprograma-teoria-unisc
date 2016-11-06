@@ -16,6 +16,10 @@ angular.module('MyApp')
         var FACA = "faça";
         var SE = "se";
 
+        //auxiliar
+        //helper pra descobrir ciclos
+        var ultima = null;
+
         $scope.programas = {
             p1: null,
             p2: null
@@ -37,17 +41,17 @@ angular.module('MyApp')
         };
 
         $scope.verificar = function () {
-            if (!$scope.programas.p1 || !$scope.programas.p2) {
-                alert("PREENCHA OS 2 PROGRAMAS");
-                return;
-            }
+            // if (!$scope.programas.p1 || !$scope.programas.p2) {
+            //     alert("PREENCHA OS 2 PROGRAMAS");
+            //     return;
+            // }
 
             var linhasP1 = $scope.programas.p1.split('\n');
-            var linhasP2 = $scope.programas.p2.split('\n');
+            // var linhasP2 = $scope.programas.p2.split('\n');
 
             var passo1P1 = monoliticoToInterativo(linhasP1, 1);
             console.log(passo1P1);
-            var passo1P2 = monoliticoToInterativo(linhasP2, 10);
+            // var passo1P2 = monoliticoToInterativo(linhasP2, 10);
 
             $scope.resultados.passo1 = passo1P1;
 
@@ -79,10 +83,10 @@ angular.module('MyApp')
                 var linhaSeparada = line.split(' ');  //quebra nos espacos
 
                 if (linhaSeparada[0] == (SE)) {
-                    var result = getTeste(programa, linhaSeparada, operacoes);
+                    var result = analisaTeste(programa, linhaSeparada, operacoes);
                     retorno.push(result);
                 } else if (linhaSeparada[0] == (FACA)) {
-                    var result = getFaca2(programa, linhaSeparada, operacoes);
+                    var result = analisaFaca(programa, linhaSeparada, operacoes, index == 0);
                     retorno.push(result);
                 }
             });
@@ -90,26 +94,45 @@ angular.module('MyApp')
             return retorno;
         }
 
-        function getFaca2(programa, linhaSeparada, operacoes) {
+        /**
+         * Faz um faca sozinho
+         * @param programa
+         * @param linhaSeparada
+         * @param operacoes
+         * @param vindoDaPartida
+         * @returns {*}
+         */
+        function analisaFaca(programa, linhaSeparada, operacoes, vindoDaPartida) {
+            var faca = linhaSeparada[1];
             var vaPara = linhaSeparada[3];
             if (vaPara == "0") {
                 return (montaPar("parada", 'E') + "," + montaPar("parada", 'E'));
             } else {
                 var linha = programa[vaPara - 1];
-                var facaDaLinha = linha.split(' ')[1];
-
                 var facaDaLinhaSeparada = linha.split(' ');
 
-                if (facaDaLinhaSeparada[0] == (SE)) {
-                    return getTeste(programa, facaDaLinhaSeparada, operacoes);
-                } else if (facaDaLinhaSeparada[0] == (FACA)) {
-                    return (montaPar(facaDaLinha, operacoes[vaPara]) + "," + montaPar(facaDaLinha, operacoes[vaPara]));
+                //se estiver vindo da partida apenas adiciona a operacao
+                if(vindoDaPartida){
+                    return (montaPar(faca, operacoes[1]) + "," + montaPar(faca, operacoes[1]));
+                }else{
+                    if (facaDaLinhaSeparada[0] == (SE)) {
+                        return analisaTeste(programa, facaDaLinhaSeparada, operacoes);
+                    } else if (facaDaLinhaSeparada[0] == (FACA)) {
+                        return (montaPar(facaDaLinhaSeparada[1], operacoes[vaPara]) + "," + montaPar(facaDaLinhaSeparada[1], operacoes[vaPara]));
+                    }
                 }
             }
         }
 
 
-        function getTeste(programa, linhaSeparada, operacoes) {
+        /**
+         * Analisa um teste
+         * @param programa
+         * @param linhaSeparada
+         * @param operacoes
+         * @returns {string}
+         */
+        function analisaTeste(programa, linhaSeparada, operacoes) {
             var vaPara = linhaSeparada[4];
             var senaoVaPara = linhaSeparada[7];
 
@@ -119,21 +142,31 @@ angular.module('MyApp')
             if (vaPara == "0") {
                 p1 = montaPar("parada", 'E');
             } else {
-                p1 = getFaca(programa, vaPara, operacoes[vaPara]);
+                ultima = null;
+                p1 = analisaVaPara(programa, vaPara, operacoes[vaPara], true, operacoes);
             }
 
             if (senaoVaPara == "0") {
                 p2 = montaPar("parada", 'E');
             } else {
-                p2 = getFaca(programa, senaoVaPara, operacoes[senaoVaPara]);
+                ultima = null;
+                p2 = analisaVaPara(programa, senaoVaPara, operacoes[senaoVaPara], false, operacoes);
             }
 
             return p1 + "," + p2;
         }
 
 
-        //auxiliar
-        function getFaca(programa, numLinha, numOperacao) {
+        /**
+         * Analisa um va_para dentro de um teste
+         * @param programa
+         * @param numLinha
+         * @param numOperacao
+         * @param teste
+         * @param operacoes
+         * @returns {*}
+         */
+        function analisaVaPara(programa, numLinha, numOperacao, teste, operacoes) {
             var line = programa[numLinha - 1];
 
             var linhaSeparada = line.split(' ');  //quebra nos espacos
@@ -145,8 +178,19 @@ angular.module('MyApp')
                 var vaPara = linhaSeparada[4];
                 var senaoVaPara = linhaSeparada[7];
 
-            }
+                //descobre se nao estamos em um ciclo
+                if((ultima == vaPara && teste) || (ultima == senaoVaPara && teste)){
+                    return montaPar("ciclo", "w");
+                }
 
+                ultima = numLinha;
+
+                if(teste){
+                    return analisaVaPara(programa, vaPara, operacoes[vaPara], true, operacoes);
+                }else{
+                    return analisaVaPara(programa, senaoVaPara, operacoes[senaoVaPara], false, operacoes);
+                }
+            }
         }
 
         function montaPar(v1, v2) {
