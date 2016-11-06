@@ -86,7 +86,9 @@
         <div class="col-md-3">
             <h3>Passo 1</h3>
             <div class="panel panel-default">
-                <div id="passo1" ng-model="resultados.passo1" class="panel-body">
+                <div id="passo1" class="panel-body">
+                    <span class="row"
+                          ng-repeat="x in resultados.passo1 track by $index"><strong>{{$index + 1}}:</strong>{{x}}</span>
                 </div>
             </div>
         </div>

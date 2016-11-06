@@ -77,15 +77,24 @@ angular.module('MyApp')
 
             console.log(operacoes);
 
+            //se o programa comeca com um Teste ou com um Faca, afeta o algoritmo
+            var comecaComSe = false;
+
             _.forEach(programa, function (line, index) {
                 line = line.trim(); //remove whitespace
 
                 var linhaSeparada = line.split(' ');  //quebra nos espacos
 
-                if (linhaSeparada[0] == (SE)) {
+                if (index == 0) {
+                    comecaComSe = (linhaSeparada[0] == (SE));
+                }
+
+                if (linhaSeparada[0] == (SE) && (!comecaComSe || index == 0)) {
                     var result = analisaTeste(programa, linhaSeparada, operacoes);
                     retorno.push(result);
-                } else if (linhaSeparada[0] == (FACA)) {
+                }
+
+                if (linhaSeparada[0] == (FACA) && (comecaComSe || index == 0)) {
                     var result = analisaFaca(programa, linhaSeparada, operacoes, index == 0);
                     retorno.push(result);
                 }
@@ -112,9 +121,9 @@ angular.module('MyApp')
                 var facaDaLinhaSeparada = linha.split(' ');
 
                 //se estiver vindo da partida apenas adiciona a operacao
-                if(vindoDaPartida){
+                if (vindoDaPartida) {
                     return (montaPar(faca, operacoes[1]) + "," + montaPar(faca, operacoes[1]));
-                }else{
+                } else {
                     if (facaDaLinhaSeparada[0] == (SE)) {
                         return analisaTeste(programa, facaDaLinhaSeparada, operacoes);
                     } else if (facaDaLinhaSeparada[0] == (FACA)) {
@@ -179,15 +188,15 @@ angular.module('MyApp')
                 var senaoVaPara = linhaSeparada[7];
 
                 //descobre se nao estamos em um ciclo
-                if((ultima == vaPara && teste) || (ultima == senaoVaPara && teste)){
+                if ((ultima == vaPara && teste) || (ultima == senaoVaPara && teste)) {
                     return montaPar("ciclo", "w");
                 }
 
                 ultima = numLinha;
 
-                if(teste){
+                if (teste) {
                     return analisaVaPara(programa, vaPara, operacoes[vaPara], true, operacoes);
-                }else{
+                } else {
                     return analisaVaPara(programa, senaoVaPara, operacoes[senaoVaPara], false, operacoes);
                 }
             }
