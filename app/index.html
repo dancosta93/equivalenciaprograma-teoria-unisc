@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+
+<html lang="en" ng-app="MyApp">
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    <title>Trab1 Teoria da Computacao</title>
+
+    <link rel="stylesheet" href="style/bootstrap.min.css">
+    <link rel="stylesheet" href="style/custom.css">
+    <link rel="stylesheet" href="style/jquery-linedtextarea.css">
+
+    <script src="../bower_components/jquery/dist/jquery.js"></script>
+    <script src="../bower_components/angular/angular.js"></script>
+    <script src="../bower_components/lodash/lodash.js"></script>
+    <script src="../bower_components/bootstrap/dist/js/bootstrap.min.js"></script>
+    <script src="../bower_components/angular-bootstrap/ui-bootstrap-tpls.min.js"></script>
+
+    <script src="scripts/jquery-linedtextarea.js"></script>
+    <script src="scripts/jquery.canvasjs.min.js"></script>
+
+    <script src="app.js"></script>
+    <script src="panel/panel.directive.js"></script>
+
+</head>
+<body ng-controller="AppController as ctrl">
+
+<div class="page-header">
+    <h1>
+        Equivalencia forte de Programas
+    </h1>
+</div>
+
+<div class="container-fluid">
+
+    <div class="overlay-submit" ng-show="loading">
+        <img class="submitting-loading"/>
+    </div>
+
+
+    <div class="row">
+        <div class="col-md-6">
+            <div class="form-group">
+                <label>Programa 1
+                    <button id="pre1" type="button" ng-click="programas.p1 = exemplos[0]" class="btn btn-link">
+                        <small>Exemplo 1</small>
+                    </button>
+                    <button id="pre2" type="button" ng-click="programas.p1 = exemplos[2]" class="btn btn-link">
+                        <small>Exemplo 2</small>
+                    </button>
+                </label>
+
+                <textarea ng-model="programas.p1" style="width: 100%" id="programa1" name="programa1"
+                          class="form-input textbox line_textarea"
+                          rows="7" wrap="off" required></textarea>
+
+            </div>
+        </div>
+
+        <div class="col-md-6">
+            <div class="form-group">
+                <label>Programa 1
+                    <button id="pre3" type="button" ng-click="programas.p2 = exemplos[1]" class="btn btn-link">
+                        <small>Exemplo 1</small>
+                    </button>
+                    <button id="pre4" type="button" ng-click="programas.p2 = exemplos[3]" class="btn btn-link">
+                        <small>Exemplo 2</small>
+                    </button>
+                </label>
+
+                <textarea ng-model="programas.p2" style="width: 100%" id="programa2" name="programa2"
+                          class="form-input textbox line_textarea"
+                          rows="7" wrap="off" required></textarea>
+
+            </div>
+        </div>
+
+    </div>
+
+    <button ng-click="verificar()" class="btn btn-success">Verificar</button>
+
+
+    <div class="row">
+        <div class="col-md-3">
+            <h3>Passo 1</h3>
+            <div class="panel panel-default">
+                <div id="passo1" ng-model="resultados.passo1" class="panel-body">
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <h3>Passo 2</h3>
+            <div class="panel panel-default">
+                <div id="passo2" ng-model="resultados.passo2" class="panel-body">
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <h3>Passo 3</h3>
+            <div class="panel panel-default">
+                <div id="passo3" ng-model="resultados.passo3" class="panel-body">
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <h3>Passo 4</h3>
+            <div class="panel panel-default">
+                <div id="passo4" ng-model="resultados.passo4" class="panel-body">
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<footer>
+    <div class="text-center">
+        Teoria da Computação - UNISC
+        <br>
+        Daniel Costa, Felipe Augusto Hertzer
+    </div>
+
+</footer>
+
+
+</body>
+</html>
+
+<script>
+    $(".line_textarea").linedtextarea(
+            {selectedLine: 1}
+    );
+</script>
