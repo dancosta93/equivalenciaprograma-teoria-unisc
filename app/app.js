@@ -26,10 +26,17 @@ angular.module('MyApp')
         };
 
         $scope.exemplos = [
+            //P1 ex1
             'faça F vá_para 2\nse T então vá_para 3 senão vá_para 5\nfaça G vá_para 4\nse T então vá_para 1 senão vá_para 0\nfaça F vá_para 6\nse T então vá_para 7 senão vá_para 2\nfaça G vá_para 8\nse T então vá_para 6 senão vá_para 0',
-            'faça F vá_para 2\nse T então vá_para 3 senão vá_para 1\nfaça G vá_para 4\nse T então vá_para 1 senão vá_para 0',
-            'se T então vá_para 2 senão vá_para 3\nfaça G vá_para 2\nfaça F vá_para 3\nse T então vá_para 2 senão vá_para 3\nse T então vá_para 6 senão vá_para 7\nfaça F vá_para 4\nfaça G vá_para 5\nse T então vá_para 6 senão vá_para 7\nse T então vá_para 10 senão vá_para 11\nfaça F vá_para 6\nse T então vá_para 10 senão vá_para 9\nse T então vá_para 0 senão vá_para 3\nfaça G vá_para 7\nse T então vá_para 3 senão vá_para 3',
-            'se T então vá_para 2 senão vá_para 3\nfaça G vá_para 9\nfaça F vá_para 10\nse T então vá_para 2 senão vá_para 3\nfaça G vá_para 11\nse T então vá_para 3 senão vá_para 5\nfaça F vá_para 2\nfaça F vá_para 3\nse T então vá_para 7 senão vá_para 8\nse T então vá_para 0 senão vá_para 8\nse T então vá_para 8 senão vá_para 8'
+
+            //P1 ex2
+            'se T entao va_para 2 senao va_para 3\nfaça G va_para 1\nfaça F va_para 4\nse T entao va_para 5 senao va_para 6\nfaça F va_para 4\nfaça G va_para 7\nse T entao va_para 8 senao va_para 9\nfaça F va_para 10\nse T entao va_para 0 senao va_para 7\nse T entao va_para 0 senao va_para 11\nfaça G va_para 11',
+
+            //P2 ex1
+            'se T então vá_para 2 senão vá_para 3\nfaça G vá_para 9\nfaça F vá_para 10\nse T então vá_para 2 senão vá_para 3\nfaça G vá_para 11\nse T então vá_para 3 senão vá_para 5\nfaça F vá_para 2\nfaça F vá_para 3\nse T então vá_para 7 senão vá_para 8\nse T então vá_para 0 senão vá_para 8\nse T então vá_para 8 senão vá_para 8',
+
+            //P2 ex2
+            'se T então vá_para 2 senão vá_para 3\nfaça G vá_para 1\nfaça F vá_para 4\nse T então vá_para 3 senão vá_para 5\nfaça G vá_para 6\nse T então vá_para 7 senão vá_para 8\nfaça F vá_para 9\nfaça F vá_para 8\nse T então vá_para 0 senão vá_para 6'
         ];
 
 
@@ -55,9 +62,11 @@ angular.module('MyApp')
             $scope.resultados.passo1P1 = realizaPasso1(linhasP1, 1);
             $scope.resultados.passo1P2 = realizaPasso1(linhasP2, $scope.resultados.passo1P1.length + 1);
 
-            $scope.resultados.passo2P1 = realizaPasso2($scope.resultados.passo1P1);
+            //TODO analisa se tem ciclo
+
+            $scope.resultados.passo2P1 = realizaPasso2($scope.resultados.passo1P1, 0);
             console.log($scope.resultados.passo2P1);
-            $scope.resultados.passo2P2 = realizaPasso2($scope.resultados.passo1P2);
+            $scope.resultados.passo2P2 = realizaPasso2($scope.resultados.passo1P2, $scope.resultados.passo1P1.length);
             console.log($scope.resultados.passo2P2);
         };
 
@@ -78,8 +87,6 @@ angular.module('MyApp')
                     operacoes[index + 1] = ++numOperacao;
                 }
             });
-
-            console.log(operacoes);
 
             //se o programa comeca com um Teste ou com um Faca, afeta o algoritmo
             var comecaComSe = false;
@@ -192,7 +199,7 @@ angular.module('MyApp')
                 var senaoVaPara = linhaSeparada[7];
 
                 //descobre se nao estamos em um ciclo
-                if ((ultima == vaPara && teste) || (ultima == senaoVaPara && teste)) {
+                if ((ultima == vaPara && teste) || (ultima == senaoVaPara && !teste)) {
                     return montaPar("ciclo", "w");
                 }
 
@@ -212,7 +219,7 @@ angular.module('MyApp')
 
 
         //passo 2
-        function realizaPasso2(rotulos) {
+        function realizaPasso2(rotulos, margem) {
             var rotulosCopy = angular.copy(rotulos);
 
             var indexDaParada = rotulosCopy.length;
@@ -231,12 +238,29 @@ angular.module('MyApp')
                 }
             }
 
-            retorno.push(retorno[retorno.length - 1] + "," + (indexDaParada + 1));
+            retorno.push(retorno[retorno.length - 1] + "," + (indexDaParada + 1 + margem));
 
-            for(var x = indexDaParada - 1; x > 0; x--){
+            for(var x = indexDaParada - 1; x >= 0; x--){
+                var indexAdicionar = []; //controla os indices que iremos adicionar
+
+                if(retorno[retorno.length - 1].indexOf((x+1 +margem)) == -1){
+                    indexAdicionar.push(x + 1 +margem);
+                }
+
                 var rotulo = rotulosCopy[x];
-                if(rotulos.indexOf("ciclo") != -1){
-                    contemCiclo = true;
+                //Olha nos rotulos anteriores se nao existe um rotulo exatamente igual
+                for(var y = x -1; y >= 0; y--){
+                    //confere se o rotulo eh exatamente igual
+                    //se for vai ser inserido junto
+                    if(rotulo == rotulosCopy[y]){
+                        if(retorno[retorno.length - 1].indexOf((y+1 +margem)) == -1){
+                            indexAdicionar.push(y + 1 + margem);
+                        }
+                    }
+                }
+
+                if(indexAdicionar.length > 0){
+                    retorno.push(retorno[retorno.length - 1] + "," + indexAdicionar.join(','));
                 }
             }
 
