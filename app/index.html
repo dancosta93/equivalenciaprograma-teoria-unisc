@@ -87,8 +87,14 @@
             <h3>Passo 1</h3>
             <div class="panel panel-default">
                 <div id="passo1" class="panel-body">
+                    Programa 1
                     <span class="row"
-                          ng-repeat="x in resultados.passo1 track by $index"><strong>{{$index + 1}}:</strong>{{x}}</span>
+                          ng-repeat="x in resultados.passo1P1 track by $index"><strong>{{$index + 1}}:</strong>{{x}}
+                    </span>
+                    Programa 2
+                    <span class="row"
+                          ng-repeat="x in resultados.passo1P2 track by $index"><strong>{{$index + 1 + resultados.passo1P1.length}}:</strong>{{x}}
+                    </span>
                 </div>
             </div>
         </div>

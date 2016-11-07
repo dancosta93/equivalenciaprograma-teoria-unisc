@@ -34,7 +34,8 @@ angular.module('MyApp')
 
 
         $scope.resultados = {
-            passo1: null,
+            passo1P1: null,
+            passo1P2: null,
             passo2: null,
             passo3: null,
             passo4: null
@@ -47,14 +48,10 @@ angular.module('MyApp')
             // }
 
             var linhasP1 = $scope.programas.p1.split('\n');
-            // var linhasP2 = $scope.programas.p2.split('\n');
+            var linhasP2 = $scope.programas.p2.split('\n');
 
-            var passo1P1 = monoliticoToInterativo(linhasP1, 1);
-            console.log(passo1P1);
-            // var passo1P2 = monoliticoToInterativo(linhasP2, 10);
-
-            $scope.resultados.passo1 = passo1P1;
-
+            $scope.resultados.passo1P1 = monoliticoToInterativo(linhasP1, 1);
+            $scope.resultados.passo1P2 = monoliticoToInterativo(linhasP2, $scope.resultados.passo1P1.length + 1);
         };
 
         //passo 1
