@@ -28,16 +28,18 @@ angular.module('MyApp')
         $scope.exemplos = [
             'faça F vá_para 2\nse T então vá_para 3 senão vá_para 5\nfaça G vá_para 4\nse T então vá_para 1 senão vá_para 0\nfaça F vá_para 6\nse T então vá_para 7 senão vá_para 2\nfaça G vá_para 8\nse T então vá_para 6 senão vá_para 0',
             'faça F vá_para 2\nse T então vá_para 3 senão vá_para 1\nfaça G vá_para 4\nse T então vá_para 1 senão vá_para 0',
-            'se T então vá_para 2 senão vá_para 3\nfaça G vá_para 2\nfaça F vá_para 3\nse T então vá_para 2 senão vá_para 3\nse T então vá_para 6 senão vá_para 7\nfaça F vá_para 4\nfaça G vá_para 5\nse T então vá_para 6 senão vá_para 7\nse T então vá_para 10 senão vá_para 11\nfaça F vá_para 6\nse T então vá_para 10 senão vá_para 9\nse T então vá_para 0 senão vá_para 13\nfaça G vá_para 7\nse T então vá_para 13 senão vá_para 13',
-            'se T então vá_para 2 senão vá_para 3\nfaça G vá_para 9\nfaça F vá_para 10\nse T então vá_para 2 senão vá_para 3\nfaça G vá_para 11\nse T então vá_para 3 senão vá_para 5\nfaça F vá_para 12\nfaça F vá_para 13\nse T então vá_para 7 senão vá_para 8\nse T então vá_para 0 senão vá_para 8\nse T então vá_para 8 senão vá_para 8'
+            'se T então vá_para 2 senão vá_para 3\nfaça G vá_para 2\nfaça F vá_para 3\nse T então vá_para 2 senão vá_para 3\nse T então vá_para 6 senão vá_para 7\nfaça F vá_para 4\nfaça G vá_para 5\nse T então vá_para 6 senão vá_para 7\nse T então vá_para 10 senão vá_para 11\nfaça F vá_para 6\nse T então vá_para 10 senão vá_para 9\nse T então vá_para 0 senão vá_para 3\nfaça G vá_para 7\nse T então vá_para 3 senão vá_para 3',
+            'se T então vá_para 2 senão vá_para 3\nfaça G vá_para 9\nfaça F vá_para 10\nse T então vá_para 2 senão vá_para 3\nfaça G vá_para 11\nse T então vá_para 3 senão vá_para 5\nfaça F vá_para 2\nfaça F vá_para 3\nse T então vá_para 7 senão vá_para 8\nse T então vá_para 0 senão vá_para 8\nse T então vá_para 8 senão vá_para 8'
         ];
 
 
         $scope.resultados = {
             passo1P1: null,
             passo1P2: null,
-            passo2: null,
-            passo3: null,
+            passo2P1: null,
+            passo2P2: null,
+            passo3P1: null,
+            passo3P2: null,
             passo4: null
         };
 
@@ -50,12 +52,17 @@ angular.module('MyApp')
             var linhasP1 = $scope.programas.p1.split('\n');
             var linhasP2 = $scope.programas.p2.split('\n');
 
-            $scope.resultados.passo1P1 = monoliticoToInterativo(linhasP1, 1);
-            $scope.resultados.passo1P2 = monoliticoToInterativo(linhasP2, $scope.resultados.passo1P1.length + 1);
+            $scope.resultados.passo1P1 = realizaPasso1(linhasP1, 1);
+            $scope.resultados.passo1P2 = realizaPasso1(linhasP2, $scope.resultados.passo1P1.length + 1);
+
+            $scope.resultados.passo2P1 = realizaPasso2($scope.resultados.passo1P1);
+            console.log($scope.resultados.passo2P1);
+            $scope.resultados.passo2P2 = realizaPasso2($scope.resultados.passo1P2);
+            console.log($scope.resultados.passo2P2);
         };
 
         //passo 1
-        function monoliticoToInterativo(programa, numOperacao) {
+        function realizaPasso1(programa, numOperacao) {
 
             var retorno = [];
             var operacoes = [];
@@ -205,18 +212,45 @@ angular.module('MyApp')
 
 
         //passo 2
-        function ciclosInfinitos(programa, init) {
+        function realizaPasso2(rotulos) {
+            var rotulosCopy = angular.copy(rotulos);
 
+            var indexDaParada = rotulosCopy.length;
+            
+            var retorno = ["E"];
+
+            //se contem ciclo devemos adicionar o w: (ciclo,w) no final
+            var contemCiclo = false;
+
+            //identifica a parada
+            for(var x = rotulosCopy.length - 1; x > 0; x--){
+                var rotulo = rotulosCopy[x];
+                if(rotulo.indexOf("(parada,E)") != -1){
+                    indexDaParada = x;
+                    break;
+                }
+            }
+
+            retorno.push(retorno[retorno.length - 1] + "," + (indexDaParada + 1));
+
+            for(var x = indexDaParada - 1; x > 0; x--){
+                var rotulo = rotulosCopy[x];
+                if(rotulos.indexOf("ciclo") != -1){
+                    contemCiclo = true;
+                }
+            }
+
+            return retorno;
         }
 
 
         //passo 3
-        function simplificacao(programa) {
+        function realizaPasso3Simplificacao(programa) {
 
         }
 
         //passo 4
-        function equivalencia(programa1, programa2) {
+        function realizaPasso4Equivalencia(programa1, programa2) {
 
         }
 

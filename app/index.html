@@ -87,11 +87,10 @@
             <h3>Passo 1</h3>
             <div class="panel panel-default">
                 <div id="passo1" class="panel-body">
-                    Programa 1
                     <span class="row"
                           ng-repeat="x in resultados.passo1P1 track by $index"><strong>{{$index + 1}}:</strong>{{x}}
                     </span>
-                    Programa 2
+                    <hr>
                     <span class="row"
                           ng-repeat="x in resultados.passo1P2 track by $index"><strong>{{$index + 1 + resultados.passo1P1.length}}:</strong>{{x}}
                     </span>
@@ -102,6 +101,13 @@
             <h3>Passo 2</h3>
             <div class="panel panel-default">
                 <div id="passo2" ng-model="resultados.passo2" class="panel-body">
+                     <span class="row"
+                           ng-repeat="x in resultados.passo2P1 track by $index"><strong>A{{$index}}:</strong>{ {{x}} }
+                    </span>
+                    <hr>
+                    <span class="row"
+                          ng-repeat="x in resultados.passo2P2 track by $index"><strong>A{{$index}}:</strong>{ {{x}} }
+                    </span>
                 </div>
             </div>
         </div>
