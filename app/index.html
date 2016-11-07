@@ -39,8 +39,11 @@
         <img class="submitting-loading"/>
     </div>
 
-
+    Os Exemplos 1 são da Atividade-Equivalencia (exercicio 1) que temos no EAD
+    <br>
+    Os exemplos 2 são da verificação_equivalencia_comentada (ex:1) que temos no EAD
     <div class="row">
+
         <div class="col-md-6">
             <div class="form-group">
                 <label>Programa 1
@@ -94,6 +97,7 @@
                     <span class="row"
                           ng-repeat="x in resultados.passo1P2 track by $index"><strong>{{$index + 1 + resultados.passo1P1.length}}:</strong>{{x}}
                     </span>
+                    <span class="row" ng-show="contemCiclo"><strong>w:</strong>(ciclo,w),(ciclo,w)</span>
                 </div>
             </div>
         </div>
@@ -102,12 +106,14 @@
             <div class="panel panel-default">
                 <div id="passo2" ng-model="resultados.passo2" class="panel-body">
                      <span class="row"
-                           ng-repeat="x in resultados.passo2P1 track by $index"><strong>A{{$index}}:</strong>{ {{x}} }
+                           ng-repeat="x in resultados.passo2P1 track by $index"><strong>A{{$index}}=</strong>{ {{x}} }
                     </span>
+                    <span ng-show="resultados.passo2P1" class="row"><strong>A{{resultados.passo2P1.length}}</strong>= A{{resultados.passo2P1.length - 1}}</span>
                     <hr>
                     <span class="row"
-                          ng-repeat="x in resultados.passo2P2 track by $index"><strong>A{{$index}}:</strong>{ {{x}} }
+                          ng-repeat="x in resultados.passo2P2 track by $index"><strong>A{{$index}}=</strong>{ {{x}} }
                     </span>
+                    <span ng-show="resultados.passo2P2" class="row"><strong>A{{resultados.passo2P2.length}}=</strong> A{{resultados.passo2P2.length - 1}}</span>
                 </div>
             </div>
         </div>

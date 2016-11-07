@@ -51,10 +51,13 @@ angular.module('MyApp')
         };
 
         $scope.verificar = function () {
-            // if (!$scope.programas.p1 || !$scope.programas.p2) {
-            //     alert("PREENCHA OS 2 PROGRAMAS");
-            //     return;
-            // }
+            if (!$scope.programas.p1 || !$scope.programas.p2) {
+                alert("PREENCHA OS 2 PROGRAMAS");
+                return;
+            }
+
+            //TODO analisa se tem ciclo
+            $scope.contemCiclo = false;
 
             var linhasP1 = $scope.programas.p1.split('\n');
             var linhasP2 = $scope.programas.p2.split('\n');
@@ -62,12 +65,14 @@ angular.module('MyApp')
             $scope.resultados.passo1P1 = realizaPasso1(linhasP1, 1);
             $scope.resultados.passo1P2 = realizaPasso1(linhasP2, $scope.resultados.passo1P1.length + 1);
 
-            //TODO analisa se tem ciclo
+            console.log($scope.resultados);
+
+
+
+
 
             $scope.resultados.passo2P1 = realizaPasso2($scope.resultados.passo1P1, 0);
-            console.log($scope.resultados.passo2P1);
             $scope.resultados.passo2P2 = realizaPasso2($scope.resultados.passo1P2, $scope.resultados.passo1P1.length);
-            console.log($scope.resultados.passo2P2);
         };
 
         //passo 1
@@ -200,6 +205,7 @@ angular.module('MyApp')
 
                 //descobre se nao estamos em um ciclo
                 if ((ultima == vaPara && teste) || (ultima == senaoVaPara && !teste)) {
+                    $scope.contemCiclo = true;
                     return montaPar("ciclo", "w");
                 }
 
