@@ -58,6 +58,7 @@ angular.module('MyApp')
 
             //TODO analisa se tem ciclo
             $scope.contemCiclo = false;
+            $scope.contemCicloPosSimplificacao = false;
 
             var linhasP1 = $scope.programas.p1.split('\n');
             var linhasP2 = $scope.programas.p2.split('\n');
@@ -65,8 +66,8 @@ angular.module('MyApp')
             $scope.resultados.passo1P1 = realizaPasso1(linhasP1, 1);
             $scope.resultados.passo1P2 = realizaPasso1(linhasP2, $scope.resultados.passo1P1.length + 1);
 
-            var passo2p1 = realizaPasso2($scope.resultados.passo1P1, 0);
-            var passo2p2 = realizaPasso2($scope.resultados.passo1P2, $scope.resultados.passo1P1.length);
+            var passo2p1 = realizaPasso2e3($scope.resultados.passo1P1, 0);
+            var passo2p2 = realizaPasso2e3($scope.resultados.passo1P2, $scope.resultados.passo1P1.length);
 
             $scope.resultados.passo2P1 = passo2p1.passo2;
             $scope.resultados.passo2P2 = passo2p2.passo2;
@@ -228,8 +229,15 @@ angular.module('MyApp')
         }
 
 
-        //passo 2
-        function realizaPasso2(rotulos, margem) {
+        /**
+         * Passo 2 e 3
+         * @param rotulos os rotulos do programa, que conseguimos no passo 1
+         * @param margem caso se trate do Programa 2, temos uma margem para a numeracao do Programa 2 (seria o numero de rotulos do P1)
+         * ex: se o P1 tem 5 rotulos, o P2 comeca no 6
+         * Retorna o programa simplificado (se ocorrer simplificacao) e retorna o Passo 2 para visualizacao
+         * @returns {{passo2: string[], novoArray: *}}
+         */
+        function realizaPasso2e3(rotulos, margem) {
             var rotulosCopy = angular.copy(rotulos);
 
             var indexDaParada = rotulosCopy.length;
@@ -274,13 +282,25 @@ angular.module('MyApp')
                 }
             }
 
-
-            console.log(rotulosCopy.length - 1);
-            console.log(indexDaParada);
-
             var qtdExcluir = rotulosCopy.length - (indexDaParada + 1);
             var removidos = rotulosCopy.splice(indexDaParada + 1, qtdExcluir);
 
+            var indicesRemovidos = []; //armazenar os indices que foram removidos
+
+            _.forEach(removidos, function (x, index) {
+                indicesRemovidos.push(index + 1 + rotulosCopy.length + margem);
+            });
+
+            //Busca por referencia aos excluidos para substituir por (ciclo,w)
+            for (var x = rotulosCopy.length - 1; x > 0; x--) {
+                //Para cada linha, busca por referencia para cada indice que foi removido
+                _.forEach(indicesRemovidos, function (i) {
+                    rotulosCopy[x] = procuraReferenciaSubstituiPorCiclo(rotulosCopy[x], i);
+                });
+                if (!$scope.contemCicloPosSimplificacao && rotulosCopy[x].indexOf("ciclo") != -1) {
+                    $scope.contemCicloPosSimplificacao = true;
+                }
+            }
 
             var result = {
                 passo2: retorno,
@@ -291,10 +311,30 @@ angular.module('MyApp')
         }
 
 
-        //passo 3
-        function realizaPasso3Simplificacao(programa) {
+        /**
+         * Procura em um rotulo por uma referencia especifica, que deve ser substituida por um ciclo
+         * @param rotulo
+         * @param aProcurar
+         */
+        function procuraReferenciaSubstituiPorCiclo(rotulo, aProcurar) {
 
+            //desmonta o rotulo para procurar individualmente
+            var parts = rotulo.split("),(");
+            var part1 = parts[0] + "),";
+            var part2 = "(" + parts[1];
+
+            if (part1.indexOf(aProcurar) != -1) {
+                part1 = "(ciclo,w)";
+            }
+
+            if (part2.indexOf(aProcurar) != -1) {
+                part2 = "(ciclo,w)";
+            }
+
+            //monta novamente
+            return part1 + part2;
         }
+
 
         //passo 4
         function realizaPasso4Equivalencia(programa1, programa2) {
