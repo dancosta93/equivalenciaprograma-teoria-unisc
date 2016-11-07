@@ -78,6 +78,8 @@ angular.module('MyApp')
             $scope.naoPrecisaP1 = $scope.resultados.passo1P1.length == $scope.novoArrayP1.length;
             $scope.naoPrecisaP2 = $scope.resultados.passo1P2.length == $scope.novoArrayP2.length;
 
+            $scope.equivalentes = false;
+            $scope.resultados.passo4 = realizaPasso4Equivalencia($scope.novoArrayP1, $scope.novoArrayP2);
         };
 
         //passo 1
@@ -228,6 +230,9 @@ angular.module('MyApp')
             return "(" + v1 + "," + v2 + ")";
         }
 
+        function montaRotulo(v1, v2) {
+            return "{" + v1 + "," + v2 + "}";
+        }
 
         /**
          * Passo 2 e 3
@@ -336,10 +341,135 @@ angular.module('MyApp')
         }
 
 
-        //passo 4
-        function realizaPasso4Equivalencia(programa1, programa2) {
+        /**
+         * Passo 4, realiza o processo de equivalencia entre o p1 e p2
+         * @param p1
+         * @param p2
+         * @returns {Array}
+         */
+        function realizaPasso4Equivalencia(p1, p2) {
 
+            //removemos todos rotulos duplicados antes de comecar a comparar
+            var programa1 = removeRotulosDuplicados(p1);
+            var programa2 = removeRotulosDuplicados(p2);
+
+            console.log(programa1);
+            console.log(programa2);
+
+            var resultado = [];
+
+            //checa os primeiros rotulos para montar o B0 e B1, se os primeiros ja nao forem equivalentes, ja paramos por aqui
+            var result = checaEquivalenciaRotulos(programa1[0], programa2[0]);
+            if(!result.equivalentes){
+                $scope.equivalentes = false;
+            }else{
+                resultado.push("{" + montaPar(1, $scope.resultados.passo1P1.length + 1) + "}"); //B0
+                resultado.push(montaRotulo(result.par1, result.par2)); //B1
+
+                //equivalente ate que se prove o contrario
+                $scope.equivalentes = true;
+                for(var x = 1; x < programa1.length; x++){
+                    if(programa1[x] && programa2[x]){
+                        var result = checaEquivalenciaRotulos(programa1[x], programa2[x]);
+                        if(result.equivalentes){
+                            resultado.push(montaRotulo(result.par1, result.par2)); //BX
+                        }else{
+                            $scope.equivalentes = false;
+                            resultado.push("≠");
+                            break; //break the loop
+                        }
+                    }else{
+                        $scope.equivalentes = false;
+                        resultado.push("≠");
+                        break; //break the loop
+                    }
+                }
+            }
+
+            if($scope.equivalentes){
+                resultado.push("∅");
+            }
+
+            return resultado;
         }
+
+        /**
+         * Checa equivalencia entre 2 pares rotulos
+         * @param rotulo1
+         * @param rotulo2
+         */
+        function checaEquivalenciaRotulos(rotulo1, rotulo2) {
+            //desmonta o par de rotulo para procurar individualmente
+            var partsRotulo1 = rotulo1.split("),(");
+            var rotulo1Valor1 = partsRotulo1[0].split(',')[1];
+            var rotulo1Valor2 = partsRotulo1[1].split(',')[1].replace(")", "");
+
+            var partsRotulo2 = rotulo2.split("),(");
+            var rotulo2Valor1 = partsRotulo2[0].split(',')[1];
+            var rotulo2Valor2 = partsRotulo2[1].split(',')[1].replace(")", "");
+
+            var par1 = montaPar(rotulo1Valor1,rotulo2Valor1);
+            var par2 = montaPar(rotulo1Valor2,rotulo2Valor2);
+
+            var par1Equivalente = checaEquivalenciaValor(rotulo1Valor1, rotulo2Valor1);
+            var par2Equivalente = checaEquivalenciaValor(rotulo1Valor2, rotulo2Valor2);
+
+            return {
+                par1: par1,
+                par2: par2,
+                equivalentes: par1Equivalente && par2Equivalente
+            }
+        }
+
+
+        /**
+         * remove os rotulos duplicados de um programa
+         * Por ex: {(F,2),(G,5)} e {(F,2),(G,5)}
+         * @param p
+         * @returns {Array}
+         */
+        function removeRotulosDuplicados(p){
+            var programa = angular.copy(p);
+            var novosRotulos = [];
+
+            _.forEach(programa, function(p){
+                if(!_.includes(novosRotulos, p)){
+                    novosRotulos.push(p);
+                }
+            });
+
+            return novosRotulos;
+        }
+
+        /**
+         * Compara equivalencia entre 2 valores
+         * ciclo = ciclo
+         * w = w
+         * E = E
+         * parada = parada
+         * INT = INT
+         * sao exemplos de valores equivalentes
+         * @param v1
+         * @param v2
+         */
+        function checaEquivalenciaValor(v1, v2) {
+            //se sao exatamente iguais
+            if (v1 == v2) {
+                return true;
+            }
+            //se sao inteiros
+            if (isInt(v1) && isInt(v2)) {
+                return true;
+            }
+            return false;
+        }
+
+        //helper
+        function isInt(x) {
+            var y = parseInt(x, 10);
+            return !isNaN(y) && x == y && x.toString() == y.toString();
+        }
+
 
 
     });
