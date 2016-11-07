@@ -33,7 +33,7 @@ angular.module('MyApp')
             'se T entao va_para 2 senao va_para 3\nfaça G va_para 1\nfaça F va_para 4\nse T entao va_para 5 senao va_para 6\nfaça F va_para 4\nfaça G va_para 7\nse T entao va_para 8 senao va_para 9\nfaça F va_para 10\nse T entao va_para 0 senao va_para 7\nse T entao va_para 0 senao va_para 11\nfaça G va_para 11',
 
             //P2 ex1
-            'se T então vá_para 2 senão vá_para 3\nfaça G vá_para 9\nfaça F vá_para 10\nse T então vá_para 2 senão vá_para 3\nfaça G vá_para 11\nse T então vá_para 3 senão vá_para 5\nfaça F vá_para 2\nfaça F vá_para 3\nse T então vá_para 7 senão vá_para 8\nse T então vá_para 0 senão vá_para 8\nse T então vá_para 8 senão vá_para 8',
+            'faça F vá_para 2\nse T então vá_para 3 senão vá_para 1\nfaça G vá_para 4\nse T então vá_para 1 senão vá_para 0',
 
             //P2 ex2
             'se T então vá_para 2 senão vá_para 3\nfaça G vá_para 1\nfaça F vá_para 4\nse T então vá_para 3 senão vá_para 5\nfaça G vá_para 6\nse T então vá_para 7 senão vá_para 8\nfaça F vá_para 9\nfaça F vá_para 8\nse T então vá_para 0 senão vá_para 6'
@@ -65,14 +65,18 @@ angular.module('MyApp')
             $scope.resultados.passo1P1 = realizaPasso1(linhasP1, 1);
             $scope.resultados.passo1P2 = realizaPasso1(linhasP2, $scope.resultados.passo1P1.length + 1);
 
-            console.log($scope.resultados);
+            var passo2p1 = realizaPasso2($scope.resultados.passo1P1, 0);
+            var passo2p2 = realizaPasso2($scope.resultados.passo1P2, $scope.resultados.passo1P1.length);
 
+            $scope.resultados.passo2P1 = passo2p1.passo2;
+            $scope.resultados.passo2P2 = passo2p2.passo2;
 
+            $scope.novoArrayP1 = passo2p1.novoArray;
+            $scope.novoArrayP2 = passo2p2.novoArray;
 
+            $scope.naoPrecisaP1 = $scope.resultados.passo1P1.length == $scope.novoArrayP1.length;
+            $scope.naoPrecisaP2 = $scope.resultados.passo1P2.length == $scope.novoArrayP2.length;
 
-
-            $scope.resultados.passo2P1 = realizaPasso2($scope.resultados.passo1P1, 0);
-            $scope.resultados.passo2P2 = realizaPasso2($scope.resultados.passo1P2, $scope.resultados.passo1P1.length);
         };
 
         //passo 1
@@ -229,16 +233,16 @@ angular.module('MyApp')
             var rotulosCopy = angular.copy(rotulos);
 
             var indexDaParada = rotulosCopy.length;
-            
+
             var retorno = ["E"];
 
             //se contem ciclo devemos adicionar o w: (ciclo,w) no final
             var contemCiclo = false;
 
             //identifica a parada
-            for(var x = rotulosCopy.length - 1; x > 0; x--){
+            for (var x = rotulosCopy.length - 1; x > 0; x--) {
                 var rotulo = rotulosCopy[x];
-                if(rotulo.indexOf("(parada,E)") != -1){
+                if (rotulo.indexOf("(parada,E)") != -1) {
                     indexDaParada = x;
                     break;
                 }
@@ -246,31 +250,44 @@ angular.module('MyApp')
 
             retorno.push(retorno[retorno.length - 1] + "," + (indexDaParada + 1 + margem));
 
-            for(var x = indexDaParada - 1; x >= 0; x--){
+            for (var x = indexDaParada - 1; x >= 0; x--) {
                 var indexAdicionar = []; //controla os indices que iremos adicionar
 
-                if(retorno[retorno.length - 1].indexOf((x+1 +margem)) == -1){
-                    indexAdicionar.push(x + 1 +margem);
+                if (retorno[retorno.length - 1].indexOf((x + 1 + margem)) == -1) {
+                    indexAdicionar.push(x + 1 + margem);
                 }
 
                 var rotulo = rotulosCopy[x];
                 //Olha nos rotulos anteriores se nao existe um rotulo exatamente igual
-                for(var y = x -1; y >= 0; y--){
+                for (var y = x - 1; y >= 0; y--) {
                     //confere se o rotulo eh exatamente igual
                     //se for vai ser inserido junto
-                    if(rotulo == rotulosCopy[y]){
-                        if(retorno[retorno.length - 1].indexOf((y+1 +margem)) == -1){
+                    if (rotulo == rotulosCopy[y]) {
+                        if (retorno[retorno.length - 1].indexOf((y + 1 + margem)) == -1) {
                             indexAdicionar.push(y + 1 + margem);
                         }
                     }
                 }
 
-                if(indexAdicionar.length > 0){
+                if (indexAdicionar.length > 0) {
                     retorno.push(retorno[retorno.length - 1] + "," + indexAdicionar.join(','));
                 }
             }
 
-            return retorno;
+
+            console.log(rotulosCopy.length - 1);
+            console.log(indexDaParada);
+
+            var qtdExcluir = rotulosCopy.length - (indexDaParada + 1);
+            var removidos = rotulosCopy.splice(indexDaParada + 1, qtdExcluir);
+
+
+            var result = {
+                passo2: retorno,
+                novoArray: rotulosCopy
+            };
+
+            return result;
         }
 
 

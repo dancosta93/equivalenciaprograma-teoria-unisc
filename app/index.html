@@ -121,6 +121,17 @@
             <h3>Passo 3</h3>
             <div class="panel panel-default">
                 <div id="passo3" ng-model="resultados.passo3" class="panel-body">
+                    <span class="row" ng-if="naoPrecisaP1 && naoPrecisaP2">Nenhum rótulo ficou fora dos programas, não há necessidade de simplificação</span>
+                    <div ng-if="!naoPrecisaP1 || !naoPrecisaP2">
+                        <span class="row"
+                                ng-repeat="x in novoArrayP1 track by $index"><strong>{{$index + 1}}:</strong>{{x}}
+                        </span>
+                        <hr>
+                        <span class="row"
+                              ng-repeat="x in novoArrayP2 track by $index"><strong>{{$index + 1 + resultados.passo1P1.length}}:</strong>{{x}}
+                        </span>
+                        <span class="row" ng-show="contemCiclo"><strong>w:</strong>(ciclo,w),(ciclo,w)</span>
+                    </div>
                 </div>
             </div>
         </div>
