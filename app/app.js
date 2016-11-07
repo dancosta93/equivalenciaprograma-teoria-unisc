@@ -1,7 +1,3 @@
-/**
- * Created by Daniel Costa <danielcosta123@gmail.com> on 11/20/2015.
- */
-
 'use strict';
 
 angular.module('MyApp', ['ui.bootstrap'])
@@ -24,7 +20,7 @@ angular.module('MyApp')
             p1: null,
             p2: null
         };
-
+        // Array onde contem os exemplos que podem ser utilizados
         $scope.exemplos = [
             //P1 ex1
             'faça F vá_para 2\nse T então vá_para 3 senão vá_para 5\nfaça G vá_para 4\nse T então vá_para 1 senão vá_para 0\nfaça F vá_para 6\nse T então vá_para 7 senão vá_para 2\nfaça G vá_para 8\nse T então vá_para 6 senão vá_para 0',
@@ -39,7 +35,7 @@ angular.module('MyApp')
             'se T então vá_para 2 senão vá_para 3\nfaça G vá_para 1\nfaça F vá_para 4\nse T então vá_para 3 senão vá_para 5\nfaça G vá_para 6\nse T então vá_para 7 senão vá_para 8\nfaça F vá_para 9\nfaça F vá_para 8\nse T então vá_para 0 senão vá_para 6'
         ];
 
-
+        // Limpa as variaveis de retorno
         $scope.resultados = {
             passo1P1: null,
             passo1P2: null,
@@ -60,15 +56,19 @@ angular.module('MyApp')
             $scope.contemCiclo = false;
             $scope.contemCicloPosSimplificacao = false;
 
+            // separa as linhas em um array 
             var linhasP1 = $scope.programas.p1.split('\n');
             var linhasP2 = $scope.programas.p2.split('\n');
 
+            // Chama a funcção para executar o passo 1
             $scope.resultados.passo1P1 = realizaPasso1(linhasP1, 1);
             $scope.resultados.passo1P2 = realizaPasso1(linhasP2, $scope.resultados.passo1P1.length + 1);
 
+            // Chama a funcao para executar o passo 2 e 3 com base no resultado do passo 1
             var passo2p1 = realizaPasso2e3($scope.resultados.passo1P1, 0);
             var passo2p2 = realizaPasso2e3($scope.resultados.passo1P2, $scope.resultados.passo1P1.length);
 
+            // Aidiciona o resultado do passo 2 na saida do programa
             $scope.resultados.passo2P1 = passo2p1.passo2;
             $scope.resultados.passo2P2 = passo2p2.passo2;
 
@@ -79,6 +79,7 @@ angular.module('MyApp')
             $scope.naoPrecisaP2 = $scope.resultados.passo1P2.length == $scope.novoArrayP2.length;
 
             $scope.equivalentes = false;
+            // chama a função para executar o passo 4
             $scope.resultados.passo4 = realizaPasso4Equivalencia($scope.novoArrayP1, $scope.novoArrayP2);
         };
 
@@ -246,7 +247,7 @@ angular.module('MyApp')
             var rotulosCopy = angular.copy(rotulos);
 
             var indexDaParada = rotulosCopy.length;
-
+            // seta o valor inicial como E
             var retorno = ["E"];
 
             //se contem ciclo devemos adicionar o w: (ciclo,w) no final
@@ -464,7 +465,7 @@ angular.module('MyApp')
             return false;
         }
 
-        //helper
+        //helper - verificar se é um numero inteiro
         function isInt(x) {
             var y = parseInt(x, 10);
             return !isNaN(y) && x == y && x.toString() == y.toString();
